@@ -241,7 +241,7 @@
                 
               
 
-              <time title="创建时间：2019-09-22 19:16:51 / 修改时间：19:24:47" itemprop="dateCreated datePublished" datetime="2019-09-22T19:16:51+08:00">2019-09-22</time>
+              <time title="创建时间：2019-09-22 19:16:51 / 修改时间：19:29:25" itemprop="dateCreated datePublished" datetime="2019-09-22T19:16:51+08:00">2019-09-22</time>
             </span>
           
             
@@ -273,10 +273,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>###梯度裁剪(Gradient Clipping)<br>为了解决梯度消失（gradient explosion）和梯度爆炸（gradients vanishing）<br>tensorflow中所有的优化器<code>tf.train.xxxOptimizer</code>都有两个方法：</p>
+          <a id="more"></a>
+<p>###梯度裁剪(Gradient Clipping)<br>为了解决梯度消失（gradient explosion）和梯度爆炸（gradients vanishing）<br>tensorflow中所有的优化器<code>tf.train.xxxOptimizer</code>都有两个方法：</p>
 <ol>
 <li>compute_gradients</li>
-<li>apply_gradients<br>&lt; !–more–&gt;</li>
+<li>apply_gradients</li>
 </ol>
 <p>对于compute_gradients方法，计算var_list中参数的梯度，是的loss变小。默认情况下，var_list为<code>GraphKeys.TRAINABLE_VARIABLES</code>中的所有参数。<br>compute_gradients方法返回（gradients， variable）对的组成的列表</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">compute_gradients(</span><br><span class="line">    loss,</span><br><span class="line">    var_list=<span class="literal">None</span>,</span><br><span class="line">    gate_gradients=GATE_OP,</span><br><span class="line">    aggregation_method=<span class="literal">None</span>,</span><br><span class="line">    colocate_gradients_with_ops=<span class="literal">False</span>,</span><br><span class="line">    grad_loss=<span class="literal">None</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
