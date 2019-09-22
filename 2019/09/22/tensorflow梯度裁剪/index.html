@@ -55,18 +55,18 @@
   };
 </script>
 
-  <meta name="description" content="###梯度裁剪(Gradient Clipping)为了解决梯度消失（gradient explosion）和梯度爆炸（gradients vanishing）tensorflow中所有的优化器tf.train.xxxOptimizer都有两个方法：  compute_gradients apply_gradients  对于compute_gradients方法，计算var_list中参数的梯">
+  <meta name="description" content="梯度消失（gradient explosion）和梯度爆炸（gradients vanishing）">
 <meta name="keywords" content="tensorflow,梯度消失,梯度爆炸">
 <meta property="og:type" content="article">
 <meta property="og:title" content="tensorflow梯度裁剪">
 <meta property="og:url" content="http://yoursite.com/2019/09/22/tensorflow梯度裁剪/index.html">
 <meta property="og:site_name" content="硬train一发">
-<meta property="og:description" content="###梯度裁剪(Gradient Clipping)为了解决梯度消失（gradient explosion）和梯度爆炸（gradients vanishing）tensorflow中所有的优化器tf.train.xxxOptimizer都有两个方法：  compute_gradients apply_gradients  对于compute_gradients方法，计算var_list中参数的梯">
+<meta property="og:description" content="梯度消失（gradient explosion）和梯度爆炸（gradients vanishing）">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-22T11:29:25.173Z">
+<meta property="og:updated_time" content="2019-09-22T11:34:20.540Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="tensorflow梯度裁剪">
-<meta name="twitter:description" content="###梯度裁剪(Gradient Clipping)为了解决梯度消失（gradient explosion）和梯度爆炸（gradients vanishing）tensorflow中所有的优化器tf.train.xxxOptimizer都有两个方法：  compute_gradients apply_gradients  对于compute_gradients方法，计算var_list中参数的梯">
+<meta name="twitter:description" content="梯度消失（gradient explosion）和梯度爆炸（gradients vanishing）">
   <link rel="canonical" href="http://yoursite.com/2019/09/22/tensorflow梯度裁剪/">
 
 
@@ -246,7 +246,7 @@
                 
               
 
-              <time title="创建时间：2019-09-22 19:16:51 / 修改时间：19:29:25" itemprop="dateCreated datePublished" datetime="2019-09-22T19:16:51+08:00">2019-09-22</time>
+              <time title="创建时间：2019-09-22 19:16:51 / 修改时间：19:34:20" itemprop="dateCreated datePublished" datetime="2019-09-22T19:16:51+08:00">2019-09-22</time>
             </span>
           
             
@@ -278,8 +278,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <a id="more"></a>
-<p>###梯度裁剪(Gradient Clipping)<br>为了解决梯度消失（gradient explosion）和梯度爆炸（gradients vanishing）<br>tensorflow中所有的优化器<code>tf.train.xxxOptimizer</code>都有两个方法：</p>
+        <p>梯度消失（gradient explosion）和梯度爆炸（gradients vanishing）</p>
+<a id="more"></a>
+
+<h3 id="梯度裁剪-Gradient-Clipping"><a href="#梯度裁剪-Gradient-Clipping" class="headerlink" title="梯度裁剪(Gradient Clipping)"></a>梯度裁剪(Gradient Clipping)</h3><p>为了解决梯度消失（gradient explosion）和梯度爆炸（gradients vanishing）<br>tensorflow中所有的优化器<code>tf.train.xxxOptimizer</code>都有两个方法：</p>
 <ol>
 <li>compute_gradients</li>
 <li>apply_gradients</li>
@@ -290,7 +292,7 @@
 <p>对于apply_gradients方法，根据compute_gradients的返回结果对参数进行更新</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">apply_gradients(</span><br><span class="line">    grads_and_vars,</span><br><span class="line">    global_step=<span class="literal">None</span>,</span><br><span class="line">    name=<span class="literal">None</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 
-<p>###tensorflow中裁剪梯度的几种方式<br><strong>方法一</strong>:tf.clip_by_global_norm函数</p>
+<h3 id="tensorflow中裁剪梯度的几种方式"><a href="#tensorflow中裁剪梯度的几种方式" class="headerlink" title="tensorflow中裁剪梯度的几种方式"></a>tensorflow中裁剪梯度的几种方式</h3><p><strong>方法一</strong>:tf.clip_by_global_norm函数</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">tf.clip_by_global_norm(</span><br><span class="line">    t_list,<span class="comment">#常输入梯度</span></span><br><span class="line">    clip_norm,<span class="comment">#裁剪率</span></span><br><span class="line">    use_norm=<span class="literal">None</span>,<span class="comment">#使用已经计算规约</span></span><br><span class="line">    name=<span class="literal">None</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 
 <p>返回值为裁剪后的梯度列表list_clipped和全局的规约数global_norm<br><strong>示例代码</strong></p>
@@ -385,6 +387,8 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#梯度裁剪-Gradient-Clipping"><span class="nav-number">1.</span> <span class="nav-text">梯度裁剪(Gradient Clipping)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tensorflow中裁剪梯度的几种方式"><span class="nav-number">2.</span> <span class="nav-text">tensorflow中裁剪梯度的几种方式</span></a></li></ol></div>
+        
       </div>
       <!--/noindex-->
 
