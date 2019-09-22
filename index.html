@@ -212,6 +212,111 @@
   
   
   <div class="post-block home">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/22/tensorflow梯度裁剪/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wuzhiyuan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="硬train一发">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+            
+            <a href="/2019/09/22/tensorflow梯度裁剪/" class="post-title-link" itemprop="url">tensorflow梯度裁剪</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-22 19:16:51 / 修改时间：19:24:47" itemprop="dateCreated datePublished" datetime="2019-09-22T19:16:51+08:00">2019-09-22</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/神经网络/" itemprop="url" rel="index"><span itemprop="name">神经网络</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>###梯度裁剪(Gradient Clipping)<br>为了解决梯度消失（gradient explosion）和梯度爆炸（gradients vanishing）<br>tensorflow中所有的优化器<code>tf.train.xxxOptimizer</code>都有两个方法：</p>
+<ol>
+<li>compute_gradients</li>
+<li>apply_gradients<br>&lt; !–more–&gt;</li>
+</ol>
+<p>对于compute_gradients方法，计算var_list中参数的梯度，是的loss变小。默认情况下，var_list为<code>GraphKeys.TRAINABLE_VARIABLES</code>中的所有参数。<br>compute_gradients方法返回（gradients， variable）对的组成的列表</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">compute_gradients(</span><br><span class="line">    loss,</span><br><span class="line">    var_list=<span class="literal">None</span>,</span><br><span class="line">    gate_gradients=GATE_OP,</span><br><span class="line">    aggregation_method=<span class="literal">None</span>,</span><br><span class="line">    colocate_gradients_with_ops=<span class="literal">False</span>,</span><br><span class="line">    grad_loss=<span class="literal">None</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>对于apply_gradients方法，根据compute_gradients的返回结果对参数进行更新</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">apply_gradients(</span><br><span class="line">    grads_and_vars,</span><br><span class="line">    global_step=<span class="literal">None</span>,</span><br><span class="line">    name=<span class="literal">None</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>###tensorflow中裁剪梯度的几种方式<br><strong>方法一</strong>:tf.clip_by_global_norm函数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">tf.clip_by_global_norm(</span><br><span class="line">    t_list,<span class="comment">#常输入梯度</span></span><br><span class="line">    clip_norm,<span class="comment">#裁剪率</span></span><br><span class="line">    use_norm=<span class="literal">None</span>,<span class="comment">#使用已经计算规约</span></span><br><span class="line">    name=<span class="literal">None</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>返回值为裁剪后的梯度列表list_clipped和全局的规约数global_norm<br><strong>示例代码</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">optimizer = tf.train.AdamOptimizer(self.learning_rate)</span><br><span class="line">gradients, v = zip(*optimizer.compute_gradients(self.pretrain_loss))</span><br><span class="line">gradients, _ = tf.clip_by_global_norm(gradients, self.grad_clip)</span><br><span class="line">updates = optimizer.apply_gradients(zip(gradients, v),global_step=self.global_step)</span><br></pre></td></tr></table></figure>
+
+<p>对于t_list中的梯度使用如下公式裁剪<br>$$t_list[i] = t_list[i] * \frac{clip_norm}{max(global_norm, clip_norm)}$$<br>其中，global_norm=sqrt(sum([t<strong>2 for t_list])),也即所有梯度的平方和在开根号（就是l2范数），如果clip_norm &gt; global_norm, 则不对梯度进行裁剪，否则对梯度进行缩放<br>**方法二</strong>:手动裁剪<br>实际上原理和方法一的内部机制相同，使用clip_by_norm函数<br><strong>示例代码</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">optimizer = tf.train.AdamOptimizer(learning_rate, beta1=<span class="number">0.5</span>)</span><br><span class="line">grads = optimizer.compute_gradients(cost)</span><br><span class="line"><span class="keyword">for</span> i, (g, v) <span class="keyword">in</span> enumerate(grads):</span><br><span class="line">    <span class="keyword">if</span> g <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        grads[i] = (tf.clip_by_norm(g, <span class="number">5</span>), v)  <span class="comment"># clip gradients</span></span><br><span class="line">train_op = optimizer.apply_gradients(grads)</span><br></pre></td></tr></table></figure>
+
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </div>
+  
+  
+  
+  </article>
+
+    
+        <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block home">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/21/hello-world/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -326,6 +431,9 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/avatar.gif"
+      alt="Wuzhiyuan">
   <p class="site-author-name" itemprop="name">Wuzhiyuan</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -334,8 +442,34 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-count">2</span>
           <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span>
         </a>
       </div>
     
